@@ -17,6 +17,7 @@ void community_insert(FILE *, int, List*);
 
 void zorcPath(FILE *);
 
-void insertEnd(List *, int, int, int);
+void insertEnd(List *, int, float, float);
+void printList(List *);
 
 #endif

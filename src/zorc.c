@@ -2,9 +2,9 @@
 
 struct povo_t {
 	int id;               // povo 1,2...i;
-	int peso;           
-	int habilidade;
-	int media_de_batalha; // h1 dividido por w1 , posteriormente é só verificar a melhor média para saber o povo melhor.
+	float peso;           
+	float habilidade;
+	float media_de_batalha; // h1 dividido por w1 , posteriormente é só verificar a melhor média para saber o povo melhor.
   
   povo *next;
 };
@@ -47,6 +47,8 @@ void zorcPath(FILE *file){
 
     community_insert(file, P, &lista);
 
+    printList(&lista);
+
     freeGraph(graph, P);
 
     K--;
@@ -79,13 +81,14 @@ void outTable(char *file, int *cont){
 
 void community_insert(FILE *arq , int P,List *lista){
 
-  int id, w, h;
+  int id; 
+  float w, h;
 
   printf("P= %d\n",P);
 
   while (P != 0){
 
-    fscanf(arq, "%d %d %d", &id,&w,&h);
+    fscanf(arq, "%d %f %f", &id,&w,&h);
     insertEnd(lista,id,w,h);
 
     P--;
@@ -117,14 +120,18 @@ void freeGraph(int **matriz, int P){
 }
 
 // inserir no final da lista
-void insertEnd(List *lista, int id, int peso, int habilidade){
+void insertEnd(List *lista, int id, float peso, float habilidade){
 
   povo *newPovo = criar_povo(); // cria um novo nó
+
+  float media = habilidade/peso;
+
+  printf("%f ", media);
 
   newPovo->id= id;
   newPovo->peso = peso;
   newPovo->habilidade = habilidade;
-  newPovo->media_de_batalha = habilidade/peso;
+  newPovo->media_de_batalha = media;
   newPovo->next = NULL;
 
   if(lista->start == NULL) { // lista vazia
@@ -138,3 +145,22 @@ void insertEnd(List *lista, int id, int peso, int habilidade){
   lista->tam++;
 }
 
+// imprimir a lista
+void printList(List *lista) {
+
+  povo *start = lista->start;
+
+  printf("Tamanho da lista: %d\n", lista->tam);
+
+  while(start != NULL) {
+
+    printf("Id = %d\n", start->id);
+    printf("Peso = %0.1f\n", start->peso);
+    printf("Habilidade = %0.1f\n", start->habilidade);
+    printf("Média = %0.3f\n", start->media_de_batalha);
+
+    start = start->next;
+  }
+
+  printf("\n\n");
+}

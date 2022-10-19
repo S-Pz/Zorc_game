@@ -8,6 +8,5 @@ int main(int argc, char **argv){
     file = openFile(argv[2]);
 
     zorcPath(file);
-
     return 0;
 }
