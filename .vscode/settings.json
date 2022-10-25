@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "index.h": "c",
+        "string.h": "c",
+        "graph.h": "c"
+    }
+}
