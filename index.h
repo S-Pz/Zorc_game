@@ -15,6 +15,6 @@ void community_insert(FILE *,Povo **, int);
 void zorcPath(FILE *);
 
 void monta_Exercito (Povo **, int **, int, int, int, int *);
-int encontraCaminho (Povo **, int **, int, int, int, int, int *);
+int encontraCaminho (Povo **, int **, int, int, int, int *);
 
 #endif
