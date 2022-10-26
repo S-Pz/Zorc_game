@@ -6,9 +6,8 @@
 
 void zorcPath(FILE *file){
   
-  Povo *lista;
-  int *path = malloc(100 * sizeof(int));
-
+  Povo *lista=NULL;
+  int *path = (int *) calloc(200, sizeof(int));
   int K, P, D, W, C,**graph;
   
   fscanf(file,"%d",&K);
@@ -25,18 +24,18 @@ void zorcPath(FILE *file){
   
     monta_Exercito (&lista, graph,  W,  D, P, path);
     
-    for(int i=0;i<path[99]+1;i++){
+    for(int i=0; i<path[99] ;i++){
       printf("%d ",path[i]);
     }
     printf("\n");
-    
+   
     free(path);
     freeGraph(graph, P);
     freeList(lista);
     lista = NULL;
 
     K--;
-  } 
+  }
 }
 
 FILE *openFile(char *file){
@@ -65,109 +64,98 @@ void community_insert(FILE *arq, Povo **lista , int P){
 
     fscanf(arq, "%d %f %f", &id,&w,&h);
     insert(lista,id,w,h);
-
     P--;
   }
 }
 
-int encontraCaminho (Povo **lista, int **grafo, int povID, int ultimo_visitado, int D , int P , int *path){
+int encontraCaminho (Povo **lista, int **grafo, int povID, int ultimo_visitado , int P , int *path){
         
-    int existe = 0;
-    int d = D;
-    int j = ultimo_visitado;
-    int i = povID;
+  int existe = 0;
+  int j = ultimo_visitado;
+  int i = povID;
 
-    path[97] = path[97] + 1;
-    
-    Povo *auxPovo = criar_povo(); // cria um novo nó auxiliar
-    auxPovo = *lista;  // aponta para o inicio da lista
-    
-    path[98] = 0; // inicializa como povo 1.
+  path[97] = path[97] + 1;
+  path[98] = 0; // inicializa como povo 1.
+
+  for( ; path[98] < P ; path[98]++){
+    if( path[98] != i && path[98] != j){
+      if ((grafo[i][path[98]] > 0  &&  grafo[j][path[98]] > 0) && ((grafo[j][path[98]] + grafo[i][path[98]])  < path[96])){ 
+        existe = 1;
+        
+        path[path[99]] = path[98]+1;
+        path[path[99]+1] = 0;
+        path[99] = path[99] + 2;
+        //path[96] = path[96] - (grafo[i][path[98]] + grafo[j][path[98]]); // distancia percorrida
+        
+        return existe;
+      }    
+    }
+  }
   
-    for( ; path[98] < P ; path[98]++){
-      if( path[98] != i && path[98] != j){
-        if ((grafo[i][path[98]] > 0 && grafo[i][path[98]] < d) && ( grafo[j][path[98]] > 0 && grafo[j][path[98]] < d)){ 
-          existe = 1;
-          
-          path[path[99]] = path[98]+1;
-          path[path[99]+1] = 0;
-          path[99] = path[99] + 2;
-          
-          return existe;
-        }    
-      }
-    }
-    path[98] = 0;
+  if (path[97] >= P ){
+    return 0;
+  }
 
-    if (path[97] == P - 1){
-      return 0;
-    }   
-    for( ; path[98] < P ; path[98]++){
-            
-      if( path[98] != i && path[98] != j){
-                
-        existe = encontraCaminho (lista, grafo, path[98] , ultimo_visitado, d , P , path);
-        path[97] = path[97] - 1;
+  path[98] = 0;
+     
+  for( ; path[98] < P ; path[98]++){
+          
+    if( path[98] != i && path[98] != j){
+              
+      existe = encontraCaminho (lista, grafo, path[98] , ultimo_visitado , P , path);
+      path[97] = path[97] - 1;
 
+      if (existe == 1){
+        path[97] = 0;
+        existe = encontraCaminho (lista, grafo, path[98] , povID, P , path);
         if (existe == 1){
-          path[97] = 0;
-          existe = encontraCaminho (lista, grafo, path[98] , povID, d , P , path);
-          if (existe == 1){
-            return existe;
-          }            
-        }        
-      }
+          return existe;
+        }            
+      }        
     }
-  free(auxPovo);
+  }
   return existe;
 }
 //ver se o povo é realemte necessário ser criado, talvez so utilizando a lista ja basta
 
 void monta_Exercito (Povo **lista, int **grafo, int W, int D, int P , int *path){
 
-  int hab_total = 0; // habilidade do exercito
+  int hab_total = 0; // habilidade do exercito 
   int quantidade; // quantidade de povos + 1 pq o povo 0 vai ficar no P[1]
   int existe_caminho = 1; // verifica se existe caminho, sempre vai existir para o Primeiro da lista, então começa com 1.
   int ultimo_visitado;
   int pov = 1;
-  int d = D;
+  path[96] = D;
   path[99] = 1;
   
-  Povo *auxPovo = criar_povo(); // cria um novo nó auxiliar
-  auxPovo = *lista;        // auxPovo pega as informações do primeiro da lista
-
-  while(auxPovo != NULL && W > 0){   // verifica se cabe mais gente na Nave
-    quantidade = W/auxPovo->peso;  // verifica a quantidade maxima de um Povo que cabe na nave
+  while(*lista != NULL && W > 0){   // verifica se cabe mais gente na Nave
+    quantidade = W/((*lista)->peso);  // verifica a quantidade maxima de um Povo que cabe na nave
     
     if (quantidade > 0){ // verifica se o povo vai ser utilizado
       if(pov>1){
           existe_caminho = 0;
-          if ( grafo[ultimo_visitado - 1][auxPovo->id - 1] > 0 && grafo[ultimo_visitado - 1][auxPovo->id - 1] < D){   // verifica se existe caminho direto de j (ultimo caminho visitado) até i.
+          if ( grafo[ultimo_visitado - 1][(*lista)->id - 1] > 0 && grafo[ultimo_visitado - 1][(*lista)->id - 1] < path[96]){   // verifica se existe caminho direto de j (ultimo caminho visitado) até i.
             existe_caminho = 1;
-            
-            //##############
-            //d = d - lista->distancia;   //verificar qual a distancia percorrida
-            //##############
-            
           }
           else{
             path[97] = 0;
-            existe_caminho = encontraCaminho (lista, grafo, auxPovo->id - 1, ultimo_visitado - 1, d , P , path); // verifica se existe caminho
+            existe_caminho = encontraCaminho (lista, grafo, (*lista)->id  - 1, ultimo_visitado - 1,  P , path); // verifica se existe caminho
           }
       }
       if (existe_caminho == 1){
           
-        path[path[99]] = auxPovo->id;    // guarda na posição impar o ID
+        path[path[99]] = (*lista)->id ;   // guarda na posição impar o ID
         path[path[99]+1] = quantidade; // guarda na posição par a quantidade
         path[99] = path[99] + 2;  // incrementa (de 2 em 2)
         
-        W = W - (quantidade * auxPovo->peso);  // atualiza o peso restante da nave
-        ultimo_visitado = auxPovo->id; //  ultimo povo visitado
-        hab_total = hab_total + (auxPovo->habilidade * quantidade); // calcula qual a habilidade total da nave até agora
+        W = W - (quantidade * (*lista)->peso);  // atualiza o peso restante da nave
+        ultimo_visitado = (*lista)->id ; //  ultimo povo visitado
+        path[96] = path[96] - grafo[ultimo_visitado - 1][(*lista)->id - 1]; // distancia percorrida
+        hab_total = hab_total + ((*lista)->habilidade * quantidade); // calcula qual a habilidade total da nave até agora
       }
     }
-    auxPovo = auxPovo->next; // proximo povo
+    *lista = (*lista)->next; // proximo povo
     pov++;
   }
-  path[0] = hab_total;
+  path[0] = hab_total;  // path[0] guarda a habilidade total do exército que será mostrada na saída do código.
 }
