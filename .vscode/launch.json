@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/tp2",
-            "args": ["-i","entrada.txt"],
+            "args": ["-i","entrada3.txt"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
