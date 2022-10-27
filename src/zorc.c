@@ -18,12 +18,16 @@ void zorcPath(FILE *file){
 
     fscanf(file,"%d %d %d %d",&P,&D,&W,&C);
     
+    //Aloco grafo e realizo e o retorno
     graph = allocGraph(P);
 
+    //Realizo a inserção do povo na lista lido do arquivo
     community_insert(file, &lista, P);
 
+    //Realizo a montagem do meu grafo
     graph = montaGrafo(file, graph, C);
-  
+
+    //Realizada a chamada para a montagem do exercíto e o salva no vetro path
     monta_Exercito (&lista, graph, W, D, P, path);
     
     for(int i=0; i<path[99] ;i++){
@@ -31,6 +35,7 @@ void zorcPath(FILE *file){
     }
     printf("\n");
    
+   //Realizo a liberação do vetor, grafo e da lista.
     free(path);
     freeGraph(graph, P);
     freeList(lista);
@@ -57,6 +62,7 @@ void outTable(char *file, int *cont){
   fclose(saved);
 }
 
+//Realiza a inserção do povo lido do arquivo na lista
 void community_insert(FILE *arq, Povo **lista , int P){
 
   int id; 
